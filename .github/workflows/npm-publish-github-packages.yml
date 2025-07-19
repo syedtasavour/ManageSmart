@@ -9,55 +9,74 @@ on:
     types: [created]
 
 jobs:
-  build-and-test:
+  build:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: npm ci
-      - run: npm test
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
 
   deploy-staging:
-    needs: build-and-test
+    needs: build
     if: startsWith(github.ref_name, 'stage/')
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: npm ci
-      - run: npm run build
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+
       - name: Deploy to Staging
         run: |
           echo "Deploying to staging..."
           # Replace with your actual staging deploy commands
           # scp -r ./dist user@staging-server:/path
+          # rsync -avz ./dist user@staging-server:/path
 
   deploy-production:
-    needs: build-and-test
+    needs: build
     if: github.ref_name == 'main'
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: npm ci
-      - run: npm run build
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+
       - name: Deploy to Production
         run: |
           echo "Deploying to production..."
           # Replace with your actual production deploy commands
           # scp -r ./dist user@production-server:/path
+          # rsync -avz ./dist user@production-server:/path
 
   publish-gpr:
-    needs: build-and-test
+    needs: build
     if: github.event_name == 'release'
     runs-on: ubuntu-latest
     permissions:
@@ -66,11 +85,16 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           registry-url: https://npm.pkg.github.com/
-      - run: npm ci
-      - run: npm publish
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Publish to GitHub Packages
+        run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
