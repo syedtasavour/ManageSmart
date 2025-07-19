@@ -59,7 +59,7 @@ jobs:
         run: |
           curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
             "https://api.vercel.com/v6/deployments?projectId=$VERCEL_PROJECT_ID&teamId=$VERCEL_ORG_ID" | \
-            jq '.deployments[] | {uid, url, state, meta}'
+            jq '.'
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
@@ -98,22 +98,28 @@ jobs:
 
       - name: Assign custom domain to staging deployment
         run: |
-          # Wait briefly to ensure deployment is registered
-          sleep 10
-          DEPLOYMENT_URL="${{ steps.deploy.outputs.deployment_url }}"
-          DEPLOYMENTS=$(curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
-            "https://api.vercel.com/v6/deployments?projectId=$VERCEL_PROJECT_ID&teamId=$VERCEL_ORG_ID")
-          DEPLOYMENT_ID=$(echo "$DEPLOYMENTS" | jq -r --arg url "$DEPLOYMENT_URL" '.deployments[] | select(.url == $url) | .uid // empty')
-          if [ -n "$DEPLOYMENT_ID" ]; then
-            echo "Found deployment ID: $DEPLOYMENT_ID for URL $DEPLOYMENT_URL"
-            curl -s -X POST -H "Authorization: Bearer $VERCEL_TOKEN" \
-              -H "Content-Type: application/json" \
-              -d '{"name": "stage-managesmart.syedtasavour.me"}' \
-              "https://api.vercel.com/v9/projects/$VERCEL_PROJECT_ID/domains?teamId=$VERCEL_ORG_ID" || true
-            echo "Assigned stage-managesmart.syedtasavour.me to deployment $DEPLOYMENT_ID"
-          else
-            echo "Failed to find deployment ID for URL $DEPLOYMENT_URL"
-            echo "Available deployments: $(echo "$DEPLOYMENTS" | jq -r '.deployments[] | .url')"
+          # Retry mechanism to ensure deployment is registered
+          for i in {1..5}; do
+            sleep 5
+            DEPLOYMENT_URL="${{ steps.deploy.outputs.deployment_url }}"
+            echo "Attempt $i: Looking for deployment with URL: $DEPLOYMENT_URL"
+            DEPLOYMENTS=$(curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
+              "https://api.vercel.com/v6/deployments?projectId=$VERCEL_PROJECT_ID&teamId=$VERCEL_ORG_ID")
+            DEPLOYMENT_ID=$(echo "$DEPLOYMENTS" | jq -r --arg url "$DEPLOYMENT_URL" '.deployments[] | select(.url == $url) | .uid // empty')
+            if [ -n "$DEPLOYMENT_ID" ]; then
+              echo "Found deployment ID: $DEPLOYMENT_ID for URL $DEPLOYMENT_URL"
+              curl -s -X POST -H "Authorization: Bearer $VERCEL_TOKEN" \
+                -H "Content-Type: application/json" \
+                -d '{"name": "stage-managesmart.syedtasavour.me"}' \
+                "https://api.vercel.com/v9/projects/$VERCEL_PROJECT_ID/domains?teamId=$VERCEL_ORG_ID" || true
+              echo "Assigned stage-managesmart.syedtasavour.me to deployment $DEPLOYMENT_ID"
+              break
+            fi
+            echo "Attempt $i failed, retrying..."
+          done
+          if [ -z "$DEPLOYMENT_ID" ]; then
+            echo "Failed to find deployment ID after 5 attempts for URL $DEPLOYMENT_URL"
+            echo "Available deployments: $(echo "$DEPLOYMENTS" | jq -r '.deployments[] | .url' || echo 'None')"
             exit 1
           fi
         env:
@@ -184,7 +190,7 @@ jobs:
         run: |
           curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
             "https://api.vercel.com/v6/deployments?projectId=$VERCEL_PROJECT_ID&teamId=$VERCEL_ORG_ID" | \
-            jq '.deployments[] | {uid, url, state, meta}'
+            jq '.'
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
@@ -214,22 +220,28 @@ jobs:
 
       - name: Assign custom domain to production deployment
         run: |
-          # Wait briefly to ensure deployment is registered
-          sleep 10
-          DEPLOYMENT_URL="${{ steps.deploy.outputs.deployment_url }}"
-          DEPLOYMENTS=$(curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
-            "https://api.vercel.com/v6/deployments?projectId=$VERCEL_PROJECT_ID&teamId=$VERCEL_ORG_ID")
-          DEPLOYMENT_ID=$(echo "$DEPLOYMENTS" | jq -r --arg url "$DEPLOYMENT_URL" '.deployments[] | select(.url == $url) | .uid // empty')
-          if [ -n "$DEPLOYMENT_ID" ]; then
-            echo "Found deployment ID: $DEPLOYMENT_ID for URL $DEPLOYMENT_URL"
-            curl -s -X POST -H "Authorization: Bearer $VERCEL_TOKEN" \
-              -H "Content-Type: application/json" \
-              -d '{"name": "managesmart.syedtasavour.me"}' \
-              "https://api.vercel.com/v9/projects/$VERCEL_PROJECT_ID/domains?teamId=$VERCEL_ORG_ID" || true
-            echo "Assigned managesmart.syedtasavour.me to deployment $DEPLOYMENT_ID"
-          else
-            echo "Failed to find deployment ID for URL $DEPLOYMENT_URL"
-            echo "Available deployments: $(echo "$DEPLOYMENTS" | jq -r '.deployments[] | .url')"
+          # Retry mechanism to ensure deployment is registered
+          for i in {1..5}; do
+            sleep 5
+            DEPLOYMENT_URL="${{ steps.deploy.outputs.deployment_url }}"
+            echo "Attempt $i: Looking for deployment with URL: $DEPLOYMENT_URL"
+            DEPLOYMENTS=$(curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
+              "https://api.vercel.com/v6/deployments?projectId=$VERCEL_PROJECT_ID&teamId=$VERCEL_ORG_ID")
+            DEPLOYMENT_ID=$(echo "$DEPLOYMENTS" | jq -r --arg url "$DEPLOYMENT_URL" '.deployments[] | select(.url == $url) | .uid // empty')
+            if [ -n "$DEPLOYMENT_ID" ]; then
+              echo "Found deployment ID: $DEPLOYMENT_ID for URL $DEPLOYMENT_URL"
+              curl -s -X POST -H "Authorization: Bearer $VERCEL_TOKEN" \
+                -H "Content-Type: application/json" \
+                -d '{"name": "managesmart.syedtasavour.me"}' \
+                "https://api.vercel.com/v9/projects/$VERCEL_PROJECT_ID/domains?teamId=$VERCEL_ORG_ID" || true
+              echo "Assigned managesmart.syedtasavour.me to deployment $DEPLOYMENT_ID"
+              break
+            fi
+            echo "Attempt $i failed, retrying..."
+          done
+          if [ -z "$DEPLOYMENT_ID" ]; then
+            echo "Failed to find deployment ID after 5 attempts for URL $DEPLOYMENT_URL"
+            echo "Available deployments: $(echo "$DEPLOYMENTS" | jq -r '.deployments[] | .url' || echo 'None')"
             exit 1
           fi
         env:
