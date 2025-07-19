@@ -86,11 +86,8 @@ jobs:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
       - name: Deploy to Vercel (Staging)
-        id: deploy
         run: |
-          DEPLOYMENT_URL=$(vercel deploy --prebuilt --token=$VERCEL_TOKEN --scope $VERCEL_ORG_ID --yes)
-          echo "Deployment URL: $DEPLOYMENT_URL"
-          echo "deployment_url=$DEPLOYMENT_URL" >> $GITHUB_OUTPUT
+          vercel deploy --prebuilt --token=$VERCEL_TOKEN --scope $VERCEL_ORG_ID --yes
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
@@ -144,17 +141,6 @@ jobs:
       - name: Verify Vercel Output
         run: ls -la .vercel/output
 
-      - name: Deploy to Vercel (Production)
-        id: deploy
-        run: |
-          DEPLOYMENT_URL=$(vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --scope $VERCEL_ORG_ID --yes)
-          echo "Deployment URL: $DEPLOYMENT_URL"
-          echo "deployment_url=$DEPLOYMENT_URL" >> $GITHUB_OUTPUT
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-
       - name: List all deployments
         run: |
           curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
@@ -169,7 +155,7 @@ jobs:
         run: |
           DEPLOYMENTS=$(curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
             "https://api.vercel.com/v6/deployments?projectId=$VERCEL_PROJECT_ID&teamId=$VERCEL_ORG_ID")
-          CURRENT_DEPLOYMENT_ID=$(echo "$DEPLOYMENTS" | jq -r --arg url "${{ steps.deploy.outputs.deployment_url }}" '.deployments[] | select(.url == $url) | .uid // empty')
+          CURRENT_DEPLOYMENT_ID=$(echo "$DEPLOYMENTS" | jq -r --arg url "$(vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --scope $VERCEL_ORG_ID --yes | grep -o 'https://[^ ]*')" '.deployments[] | select(.url == $url) | .uid // empty')
           DEPLOYMENT_IDS=$(echo "$DEPLOYMENTS" | jq -r --arg current_id "$CURRENT_DEPLOYMENT_ID" \
             '.deployments[] | select(.meta.gitBranch | . == null or (startswith("stage/") | not) and .uid != $current_id) | .uid')
           if [ -z "$DEPLOYMENT_IDS" ]; then
@@ -182,6 +168,14 @@ jobs:
                 "https://api.vercel.com/v6/deployments/$ID?teamId=$VERCEL_ORG_ID" || true
             done
           fi
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+      - name: Deploy to Vercel (Production)
+        run: |
+          vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --scope $VERCEL_ORG_ID --yes
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
