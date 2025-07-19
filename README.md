@@ -1,4 +1,4 @@
-# ManageSmart# ManageSmart
+# ManageSmart
 
 **Open Source Project Management Software (No Resell)**
 
