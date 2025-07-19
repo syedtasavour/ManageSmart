@@ -1,7 +1,9 @@
 {
-  "name": "frontend",
+  "name": "managesmart",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "ManageSmart - Open Source Project Management Software (No Resell, For Internal and Client Deployment Only)",
+  "license": "BUSL-1.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
