@@ -1,4 +1,4 @@
-name: CI and Deploy (Hardcoded Token Test)
+name: CI and Deploy
 
 on:
   push:
@@ -46,7 +46,11 @@ jobs:
 
       - name: Deploy to Vercel (Staging)
         run: |
-          VERCEL_TOKEN=TPDpzpQvxcR9MVHGGhczaqdO vercel deploy --prebuilt --confirm
+          vercel deploy --prebuilt --token=$VERCEL_TOKEN --scope $VERCEL_ORG_ID --confirm
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
   deploy-production:
     needs: build
@@ -71,4 +75,8 @@ jobs:
 
       - name: Deploy to Vercel (Production)
         run: |
-          VERCEL_TOKEN=TPDpzpQvxcR9MVHGGhczaqdO vercel deploy --prebuilt --prod --confirm
+          vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --scope $VERCEL_ORG_ID --confirm
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
