@@ -5,8 +5,6 @@ on:
     branches:
       - 'main'
       - 'stage/**'
-  release:
-    types: [created]
 
 jobs:
   build:
@@ -17,7 +15,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
       - name: Install dependencies
         run: npm ci
@@ -43,12 +41,16 @@ jobs:
       - name: Build project
         run: npm run build
 
-      - name: Deploy to Staging
+      - name: Install Vercel CLI
+        run: npm install -g vercel
+
+      - name: Deploy to Vercel (Staging)
         run: |
-          echo "Deploying to staging..."
-          # Replace with your actual staging deploy commands
-          # scp -r ./dist user@staging-server:/path
-          # rsync -avz ./dist user@staging-server:/path
+          vercel deploy --prebuilt --token=$VERCEL_TOKEN --scope $VERCEL_ORG_ID --confirm
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
   deploy-production:
     needs: build
@@ -68,33 +70,13 @@ jobs:
       - name: Build project
         run: npm run build
 
-      - name: Deploy to Production
+      - name: Install Vercel CLI
+        run: npm install -g vercel
+
+      - name: Deploy to Vercel (Production)
         run: |
-          echo "Deploying to production..."
-          # Replace with your actual production deploy commands
-          # scp -r ./dist user@production-server:/path
-          # rsync -avz ./dist user@production-server:/path
-
-  publish-gpr:
-    needs: build
-    if: github.event_name == 'release'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          registry-url: https://npm.pkg.github.com/
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Publish to GitHub Packages
-        run: npm publish
+          vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --scope $VERCEL_ORG_ID --confirm
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
