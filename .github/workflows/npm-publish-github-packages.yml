@@ -32,6 +32,9 @@ jobs:
       - name: Build project
         run: npm run build
 
+      - name: Verify Build Output
+        run: ls -la dist
+
       - name: Install Vercel CLI
         run: npm install -g vercel
 
@@ -49,14 +52,28 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
+      - name: Verify Vercel Output
+        run: ls -la .vercel/output
+
+      - name: List all deployments
+        run: |
+          curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
+            "https://api.vercel.com/v6/deployments?projectId=$VERCEL_PROJECT_ID&teamId=$VERCEL_ORG_ID" | \
+            jq '.deployments[] | {uid, url, state, meta}'
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
       - name: Delete non-staging deployments
         run: |
           DEPLOYMENTS=$(curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
             "https://api.vercel.com/v6/deployments?projectId=$VERCEL_PROJECT_ID&teamId=$VERCEL_ORG_ID")
-          DEPLOYMENT_IDS=$(echo "$DEPLOYMENTS" | jq -r '.deployments[] | select(.meta.gitBranch | . != null and (startswith("stage/") | not) and .state == "READY") | .uid')
+          DEPLOYMENT_IDS=$(echo "$DEPLOYMENTS" | jq -r '.deployments[] | select(.meta.gitBranch | . == null or (startswith("stage/") | not)) | .uid')
           if [ -z "$DEPLOYMENT_IDS" ]; then
             echo "No non-staging deployments to delete"
           else
+            echo "Deployments to delete: $DEPLOYMENT_IDS"
             for ID in $DEPLOYMENT_IDS; do
               echo "Deleting deployment $ID"
               curl -s -X DELETE -H "Authorization: Bearer $VERCEL_TOKEN" \
@@ -88,7 +105,7 @@ jobs:
             curl -s -X POST -H "Authorization: Bearer $VERCEL_TOKEN" \
               -H "Content-Type: application/json" \
               -d '{"name": "stage-managesmart.syedtasavour.me"}' \
-              "https://api.vercel.com/v9/projects/$VERCEL_PROJECT_ID/domains?teamId=$VERCEL_ORG_ID"
+              "https://api.vercel.com/v9/projects/$VERCEL_PROJECT_ID/domains?teamId=$VERCEL_ORG_ID" || true
             echo "Assigned stage-managesmart.syedtasavour.me to deployment $DEPLOYMENT_ID"
           else
             echo "Failed to find deployment ID for URL ${{ steps.deploy.outputs.deployment_url }}"
@@ -124,6 +141,9 @@ jobs:
       - name: Build project
         run: npm run build
 
+      - name: Verify Build Output
+        run: ls -la dist
+
       - name: Install Vercel CLI
         run: npm install -g vercel
 
@@ -141,6 +161,9 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
+      - name: Verify Vercel Output
+        run: ls -la .vercel/output
+
       - name: Deploy to Vercel (Production)
         id: deploy
         run: |
@@ -152,16 +175,27 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
+      - name: List all deployments
+        run: |
+          curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
+            "https://api.vercel.com/v6/deployments?projectId=$VERCEL_PROJECT_ID&teamId=$VERCEL_ORG_ID" | \
+            jq '.deployments[] | {uid, url, state, meta}'
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
       - name: Delete non-staging and old production deployments
         run: |
           DEPLOYMENTS=$(curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
             "https://api.vercel.com/v6/deployments?projectId=$VERCEL_PROJECT_ID&teamId=$VERCEL_ORG_ID")
           CURRENT_DEPLOYMENT_ID=$(echo "$DEPLOYMENTS" | jq -r --arg url "${{ steps.deploy.outputs.deployment_url }}" '.deployments[] | select(.url == $url) | .uid')
           DEPLOYMENT_IDS=$(echo "$DEPLOYMENTS" | jq -r --arg current_id "$CURRENT_DEPLOYMENT_ID" \
-            '.deployments[] | select(.meta.gitBranch | . != null and (startswith("stage/") | not) and .state == "READY" and .uid != $current_id) | .uid')
+            '.deployments[] | select(.meta.gitBranch | . == null or (startswith("stage/") | not) and .uid != $current_id) | .uid')
           if [ -z "$DEPLOYMENT_IDS" ]; then
             echo "No non-staging or old production deployments to delete"
           else
+            echo "Deployments to delete: $DEPLOYMENT_IDS"
             for ID in $DEPLOYMENT_IDS; do
               echo "Deleting deployment $ID"
               curl -s -X DELETE -H "Authorization: Bearer $VERCEL_TOKEN" \
@@ -182,7 +216,7 @@ jobs:
             curl -s -X POST -H "Authorization: Bearer $VERCEL_TOKEN" \
               -H "Content-Type: application/json" \
               -d '{"name": "managesmart.syedtasavour.me"}' \
-              "https://api.vercel.com/v9/projects/$VERCEL_PROJECT_ID/domains?teamId=$VERCEL_ORG_ID"
+              "https://api.vercel.com/v9/projects/$VERCEL_PROJECT_ID/domains?teamId=$VERCEL_ORG_ID" || true
             echo "Assigned managesmart.syedtasavour.me to deployment $DEPLOYMENT_ID"
           else
             echo "Failed to find deployment ID for URL ${{ steps.deploy.outputs.deployment_url }}"
