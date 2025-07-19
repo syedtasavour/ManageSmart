@@ -27,6 +27,7 @@ jobs:
     needs: build
     if: startsWith(github.ref_name, 'stage/')
     runs-on: ubuntu-latest
+    environment: vercel-deploy # 🔹 Use your actual environment name here
 
     steps:
       - uses: actions/checkout@v4
@@ -46,14 +47,13 @@ jobs:
 
       - name: Deploy to Vercel (Staging)
         run: |
-          vercel deploy --prebuilt --token=$VERCEL_TOKEN --confirm
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_TOKEN=${{ secrets.VERCEL_TOKEN }} vercel deploy --prebuilt --confirm
 
   deploy-production:
     needs: build
     if: github.ref_name == 'main'
     runs-on: ubuntu-latest
+    environment: vercel-deploy # 🔹 Use your actual environment name here
 
     steps:
       - uses: actions/checkout@v4
@@ -73,6 +73,4 @@ jobs:
 
       - name: Deploy to Vercel (Production)
         run: |
-          vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --confirm
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_TOKEN=${{ secrets.VERCEL_TOKEN }} vercel deploy --prebuilt --prod --confirm
