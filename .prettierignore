@@ -1,0 +1,36 @@
+# IDE settings
+/.vscode
+
+# Node.js dependencies
+/node_modules
+
+# Build artifacts
+/dist
+/build
+
+# Environment files
+*.env
+.env
+.env.*
+
+# Logs
+*.log
+logs/
+*.log.*
+
+# Python-related files
+*.pyc
+__pycache__/
+
+# Database-related files
+*.sqlite
+*.db
+*.sql
+
+# Temporary files
+*.tmp
+*.swp
+.DS_Store
+
+# Miscellaneous
+coverage/
