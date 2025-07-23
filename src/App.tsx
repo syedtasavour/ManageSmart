@@ -1,4 +1,5 @@
 import { MsButton, MsLinkButton, MsConfirmButton } from './components/ui/buttons/index';
+import { MSInput } from './components/ui/input/MSInput';
 import "./styles/App.css"
 
 function App() {
