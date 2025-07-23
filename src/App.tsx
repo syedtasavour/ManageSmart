@@ -1,6 +1,7 @@
 import { MsButton, MsLinkButton, MsConfirmButton } from './components/ui/buttons/index';
 import { MSInput } from './components/ui/input/MSInput';
 import "./styles/App.css"
+import { LoginForm } from './pages/auth/login';
 
 function App() {
 
@@ -47,6 +48,27 @@ function App() {
           onError: (error: any) => console.error('Failed to delete item:', error),
         }}
     ></MsConfirmButton>
+    <MSInput
+        label="Example Input"
+        id="example-input"
+        name="example"
+        type="text"
+        placeholder="Enter text here"
+        value=""
+        onChange={(e: any) => console.log('Input changed:', e.target.value)}
+        fullWidth={false}
+        error={false}
+        errorText=""
+        helperText="This is a helper text."
+        prefixIcon="search"
+        suffixIcon="check"
+        loading={false}
+        disabled={false}
+        className="w-[300px]"
+    ></MSInput>
+
+    <LoginForm />
+    
     </>
   )
 }
