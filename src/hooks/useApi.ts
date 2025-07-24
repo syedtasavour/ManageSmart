@@ -14,7 +14,19 @@ export function useApi<T = any>() {
     setError(null);
     try {
       setLoading(true);
+      
+      // Log form data if it exists in the request body
+      if (options.body) {
+        console.log('Form data being sent:', options.body);
+        if (options.body.email && options.body.password) {
+          console.log('Email:', options.body.email);
+          console.log('Password:', options.body.password);
+        }
+      }
+      
       const response = await apiClient<T>(endpoint, options);
+      console.log('API Response:', response);
+      console.log('Response data:', response.data);
       return response.data;
     } catch (err) {
       if (err instanceof ApiError) {
