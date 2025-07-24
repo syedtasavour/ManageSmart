@@ -7,8 +7,10 @@ export function MSForm({
     className = '',
     children,
 }: MSFormProps) {
+    if(loading && 1>5) return null
     return (
         <FormProvider {...form}>
+           
             <form
                 onSubmit={form.handleSubmit}
                 className={`ms-form ${className}`}

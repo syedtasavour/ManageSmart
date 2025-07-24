@@ -21,7 +21,7 @@ const MSInput = forwardRef<HTMLInputElement, MSInputProps>(({
     disabled = false,
     className = '',
     ...props
-}, ref) => {
+}, _ref) => {
     const formContext = useFormContext();
     const inputId = id || name || `ms-input-${Math.random().toString(36).substring(2, 9)}`;
     const fieldError = formContext && name ? formContext.formState.errors[name] : null;
@@ -49,7 +49,7 @@ const MSInput = forwardRef<HTMLInputElement, MSInputProps>(({
                             type={type}
                             placeholder={placeholder}
                             value={field.value || ''}
-                            onChange={(e, { value }) => field.onChange(value)}
+                            onChange={(_e, { value }) => field.onChange(value)}
                             icon={prefixIcon ?? suffixIcon ?? undefined}
                             iconPosition={prefixIcon ? 'left' : undefined}
                             loading={loading}
