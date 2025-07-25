@@ -12,6 +12,15 @@ export interface MsButtonProps extends SemanticButtonProps {
     headers?: Record<string, string>;
     onSuccess?: (data: any) => void;
     onError?: (error: any) => void;
+    pendingMessage?: string;
+    successMessage?: string;
+    errorMessage?: string;
+  };
+  toastConfig?: {
+    successMessage?: string;
+    errorMessage?: string;
+    infoMessage?: string;
+    showOnClick?: boolean;
   };
 }
 

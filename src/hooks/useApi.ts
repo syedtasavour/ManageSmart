@@ -35,7 +35,7 @@ export function useApi<T = any>() {
         console.error(err);
         setError(new ApiError('Unknown error', 500, err));
       }
-      return null;
+      throw err; // Re-throw the error so the promise rejects
     } finally {
       setLoading(false);
     }
