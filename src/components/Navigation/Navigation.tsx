@@ -23,11 +23,11 @@ const Navigation: React.FC<NavigationProps> = ({ user, onLogout }) => {
   const location = useLocation();
 
   const menuItems = [
-    { name: 'dashboard', icon: 'dashboard', text: 'Dashboard', path: '/dashboard' },
-    { name: 'projects', icon: 'folder', text: 'Projects', path: '/projects' },
-    { name: 'tasks', icon: 'tasks', text: 'Tasks', path: '/tasks' },
-    { name: 'team', icon: 'users', text: 'Team', path: '/team' },
-    { name: 'reports', icon: 'chart bar', text: 'Reports', path: '/reports' },
+    { name: 'dashboard', icon: 'dashboard' as const, text: 'Dashboard', path: '/dashboard' },
+    { name: 'projects', icon: 'folder' as const, text: 'Projects', path: '/projects' },
+    { name: 'tasks', icon: 'tasks' as const, text: 'Tasks', path: '/tasks' },
+    { name: 'team', icon: 'users' as const, text: 'Team', path: '/team' },
+    { name: 'reports', icon: 'chart bar' as const, text: 'Reports', path: '/reports' },
   ];
 
   const handleSearch = (e: React.FormEvent) => {
@@ -85,7 +85,10 @@ const Navigation: React.FC<NavigationProps> = ({ user, onLogout }) => {
                 <Button basic className="!flex !items-center !gap-2 !text-gray-700">
                   <Image
                     avatar
-                    src="https://media.istockphoto.com/id/1409329028/vector/no-picture-available-placeholder-thumbnail-icon-illustration-design.jpg?s=612x612&w=0&k=20&c=_zOuJu755g2eEUioiOUdz_mHKJQJn-tDgIAhQzyeKUQ=" alt="Default Avatar" width={32} height={32}
+                    src="https://media.istockphoto.com/id/1409329028/vector/no-picture-available-placeholder-thumbnail-icon-illustration-design.jpg?s=612x612&w=0&k=20&c=_zOuJu755g2eEUioiOUdz_mHKJQJn-tDgIAhQzyeKUQ=" 
+                    alt="Default Avatar" 
+                    width={32} 
+                    height={32}
                     className="!w-8 !h-8"
                   />
                   <span className="hidden sm:inline font-medium">
@@ -95,10 +98,10 @@ const Navigation: React.FC<NavigationProps> = ({ user, onLogout }) => {
                 </Button>
               }
               options={[
-                { key: 'profile', text: 'Profile', icon: 'user' },
-                { key: 'settings', text: 'Settings', icon: 'settings' },
-                { key: 'help', text: 'Help', icon: 'help circle' },
-                { key: 'logout', text: 'Logout', icon: 'sign-out', onClick: onLogout },
+                { key: 'profile', text: 'Profile', icon: 'user' as const },
+                { key: 'settings', text: 'Settings', icon: 'settings' as const },
+                { key: 'help', text: 'Help', icon: 'help circle' as const },
+                { key: 'logout', text: 'Logout', icon: 'sign-out' as const, onClick: onLogout },
               ]}
             />
           </Menu.Item>
