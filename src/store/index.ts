@@ -24,4 +24,6 @@ export const store = createStore(
   composeEnhancers(applyMiddleware(...middleware))
 );
 
-// Type definitions are now in src/types/redux.Interface.ts
+// Type definitions
+export type RootState = ReturnType<typeof rootReducer>;
+export type AppDispatch = typeof store.dispatch;
