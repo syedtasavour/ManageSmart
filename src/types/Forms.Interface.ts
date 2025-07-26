@@ -11,6 +11,8 @@ export interface UseMSFormOptions<T extends FieldValues> {
         method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
         options?: ApiClientOptions;
     };
+    onSuccess?: (data: any) => void;
+    onError?: (error: any) => void;
     successMessage?: string;
     pendingMessage?: string;
     errorMessage?: string;
