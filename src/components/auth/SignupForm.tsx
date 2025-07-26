@@ -2,12 +2,7 @@ import React, { useState } from 'react';
 import { SemanticForm } from '../forms/SemanticForm';
 import { SemanticInput } from '../ui/input/SemanticInput';
 import { SemanticButton } from '../ui/buttons/SemanticButton';
-
-interface SignupFormProps {
-  onSubmit: (data: { name: string; email: string; password: string }) => void | Promise<void>;
-  loading?: boolean;
-  error?: string;
-}
+import type { SignupFormProps } from '../../types/auth.interface';
 
 export const SignupForm: React.FC<SignupFormProps> = ({ onSubmit, loading, error }) => {
   const [name, setName] = useState('');
@@ -49,6 +44,12 @@ export const SignupForm: React.FC<SignupFormProps> = ({ onSubmit, loading, error
       <SemanticButton type="submit" primary fluid loading={loading}>
         Sign Up
       </SemanticButton>
+      <div style={{ textAlign: 'center', marginTop: 15 }}>
+        <span>Already have an account? </span>
+        <a href="/auth/login" style={{ color: '#2185d0', textDecoration: 'none' }}>
+          Login here
+        </a>
+      </div>
     </SemanticForm>
   );
 }; 

@@ -1,11 +1,6 @@
 import React from 'react';
 import { Loader, Dimmer } from 'semantic-ui-react';
-
-interface LoadingSpinnerProps {
-  active?: boolean;
-  text?: string;
-  size?: 'mini' | 'tiny' | 'small' | 'medium' | 'large' | 'big' | 'huge' | 'massive';
-}
+import type { LoadingSpinnerProps } from '../../types/ui.interface';
 
 export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ 
   active = true, 

@@ -1,10 +1,6 @@
 import React from 'react';
-import { Form, type InputProps } from 'semantic-ui-react';
-
-interface SemanticInputProps extends InputProps {
-  label?: string;
-  errorMessage?: string;
-}
+import { Form } from 'semantic-ui-react';
+import type { SemanticInputProps } from '../../../types/ui.interface';
 
 export const SemanticInput: React.FC<SemanticInputProps> = ({ label, errorMessage, ...props }) => (
   <Form.Field error={!!errorMessage}>

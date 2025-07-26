@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
-import { useAppSelector } from '../../hooks/useRedux';
+import { useAppDispatch, useAppSelector } from '../../hooks/useRedux';
+import { signupUser } from '../../store/actions/authActions';
 import { selectIsAuthenticated } from '../../store/selectors/authSelectors';
 import { SignupForm } from '../../components/auth/SignupForm';
 import { Container, Header, Segment } from 'semantic-ui-react';
 import { useNavigate } from 'react-router-dom';
 
 export default function SignupPage() {
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const [loading, setLoading] = useState(false);
@@ -22,16 +24,8 @@ export default function SignupPage() {
     setLoading(true);
     setError(undefined);
     try {
-      const response = await fetch('/auth/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || 'Signup failed');
-      }
-      navigate('/auth/login');
+      await dispatch(signupUser(data) as any);
+      navigate('/dashboard');
     } catch (err: any) {
       setError(err?.message || 'Signup failed');
     } finally {
