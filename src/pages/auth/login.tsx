@@ -13,9 +13,17 @@ export function LoginForm() {
             endpoint: '/auth/login',
             method: 'POST',
         },
+        onSuccess: (response) => {
+            if (response?.token) {
+                document.cookie = `accessToken=${response.token}; path=/; max-age=86400; SameSite=Strict; Secure`;
+            }
+            localStorage.setItem('isLoggedIn', 'true');
+        },
+        onError: (error) => console.log(error),
         successMessage: 'Logged in successfully!',
         errorMessage: 'Login failed. Please check your credentials.',
     });
+
 
     return (
         <MSForm form={form}>

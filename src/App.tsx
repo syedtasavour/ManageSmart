@@ -2,8 +2,30 @@ import { MsButton, MsLinkButton, MsConfirmButton } from './components/ui/buttons
 import { MSInput } from './components/ui/input/MSInput';
 import './styles/App.css';
 import { LoginForm } from './pages/auth/login';
+import { useApiQuery } from './hooks/useApiQuery';
+import { useEffect,useState } from 'react';
 
 function App() {
+  // Create state for fetched data
+  const [fetchedData, setFetchedData] = useState<any>(null);
+
+  // Use useApiQuery to fetch data and update state
+  const { data, loading, error, refetch } = useApiQuery('/', {
+    params: { limit: 10 },
+    successMessage: 'Data loaded!',
+    onSuccess: (data) => {
+      setFetchedData(data);
+      console.log('Fetched:', data);
+    },
+  });
+
+  // Optionally, keep fetchedData in sync with data from useApiQuery
+  useEffect(() => {
+    if (data !== undefined && data !== null) {
+      setFetchedData(data);
+    }
+  }, [data]);
+
   return (
     <>
       {/* Example 1: MsButton with API config and toast messages */}
@@ -36,7 +58,7 @@ function App() {
         disabled={false}
         onClick={async () => {
           // Simulate async operation
-          await new Promise(resolve => setTimeout(resolve, 1000));
+          await new Promise((resolve) => setTimeout(resolve, 1000));
           console.log('Custom action completed');
         }}
         size="mini"
@@ -96,26 +118,17 @@ function App() {
         Delete Item
       </MsConfirmButton>
 
-      <MSInput
-        label="Example Input"
-        id="example-input"
-        name="example"
-        type="text"
-        placeholder="Enter text here"
-        value=""
-        onChange={(e: any) => console.log('Input changed:', e.target.value)}
-        fullWidth={false}
-        error={false}
-        errorText=""
-        helperText="This is a helper text."
-        prefixIcon="search"
-        suffixIcon="check"
-        loading={false}
-        disabled={false}
-        className="w-[300px]"
-      />
-
       <LoginForm />
+      <div>
+        {fetchedData && (
+          <div>
+            <h3>Fetched Data:</h3>
+            <pre style={{ textAlign: 'left', background: '#f5f5f5', padding: 8, borderRadius: 4 }}>
+              {JSON.stringify(fetchedData, null, 2)}
+            </pre>
+          </div>
+        )}
+      </div>
     </>
   );
 }

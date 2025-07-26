@@ -11,6 +11,8 @@ export function useMSForm<T extends FieldValues>({
     defaultValues,
     onSubmit,
     apiConfig,
+    onSuccess,
+    onError,
     successMessage = 'Saved successfully!',
     pendingMessage = 'Saving...',
     errorMessage = 'Something went wrong.',
@@ -23,12 +25,8 @@ export function useMSForm<T extends FieldValues>({
     const { callApi, loading, error } = useApi<T>();
 
     const handleSubmit: SubmitHandler<T> = async (data) => {
-        console.log('Form submitted with data:', data);
-        
         let promise: Promise<any>;
-
         if (apiConfig) {
-            console.log('Using API config:', apiConfig);
             // Use API configuration
             promise = callApi(apiConfig.endpoint, {
                 method: apiConfig.method || 'POST',
@@ -36,20 +34,27 @@ export function useMSForm<T extends FieldValues>({
                 ...apiConfig.options,
             });
         } else if (onSubmit) {
-            console.log('Using custom onSubmit');
             // Use custom onSubmit function
             promise = onSubmit(data);
         } else {
             throw new Error('Either apiConfig or onSubmit must be provided');
         }
-
+    
         toast.promise(promise, {
             pending: pendingMessage,
             success: successMessage,
             error: errorMessage,
         });
-        await promise;
+    
+        try {
+            const response = await promise;
+            onSuccess?.(response); 
+        } catch (err: any) {
+            onError?.(err); 
+        }
     };
+    
+    
 
     return { 
         ...methods, 
