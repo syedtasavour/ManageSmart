@@ -35,6 +35,12 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, loading, error }
       <SemanticButton type="submit" primary fluid loading={loading}>
         Login
       </SemanticButton>
+      <div style={{ textAlign: 'center', marginTop: 15 }}>
+        <span>Don't have an account? </span>
+        <a href="/auth/signup" style={{ color: '#2185d0', textDecoration: 'none' }}>
+          Sign up here
+        </a>
+      </div>
     </SemanticForm>
   );
 }; 
