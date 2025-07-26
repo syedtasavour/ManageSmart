@@ -15,15 +15,6 @@ export function useApi<T = any>() {
     try {
       setLoading(true);
       
-      // Log form data if it exists in the request body
-      if (options.body) {
-        console.log('Form data being sent:', options.body);
-        if (options.body.email && options.body.password) {
-          console.log('Email:', options.body.email);
-          console.log('Password:', options.body.password);
-        }
-      }
-      
       const response = await apiClient<T>(endpoint, options);
       console.log('API Response:', response);
       console.log('Response data:', response.data);
@@ -35,7 +26,7 @@ export function useApi<T = any>() {
         console.error(err);
         setError(new ApiError('Unknown error', 500, err));
       }
-      return null;
+      throw err; // Re-throw the error so the promise rejects
     } finally {
       setLoading(false);
     }
