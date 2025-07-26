@@ -9,14 +9,7 @@ import {
   Segment
 } from 'semantic-ui-react';
 import { Link, useLocation } from 'react-router-dom';
-
-interface NavigationProps {
-  user?: {
-    name?: string;
-    email?: string;
-  };
-  onLogout?: () => void;
-}
+import type { NavigationProps } from '../../types/ui.interface';
 
 const Navigation: React.FC<NavigationProps> = ({ user, onLogout }) => {
   const [searchQuery, setSearchQuery] = useState('');
