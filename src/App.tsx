@@ -9,7 +9,7 @@ function App() {
   const [fetchedData, setFetchedData] = useState<any>(null);
 
   // Use useApiQuery to fetch data and update state
-  const { data, loading, error, refetch } = useApiQuery('/', {
+  const { data } = useApiQuery('/', {
     params: { limit: 10 },
     successMessage: 'Data loaded!',
     onSuccess: (data) => {
