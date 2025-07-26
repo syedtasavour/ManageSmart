@@ -35,7 +35,7 @@ export async function apiClient<T = any>(
     return response;
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.log(error)
+      console.log("Error in apiClient", error)
       const status = error.response?.status ?? 500;
       const data = error.response?.data ?? error.message;
       throw new ApiError(error.message, status, data);
