@@ -158,10 +158,3 @@ export const refreshToken = () => {
     }
   };
 };
-
-export const clearAuthError = () => {
-  return (dispatch: AppDispatch) => {
-    // You can add a CLEAR_ERROR action to your slice if needed
-    // dispatch(clearError());
-  };
-};
