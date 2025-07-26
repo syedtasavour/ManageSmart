@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../hooks/useRedux';
 import { loginUser } from '../../store/actions/authActions';
 import { selectIsAuthenticated } from '../../store/selectors/authSelectors';
@@ -20,18 +20,18 @@ export default function LoginPage() {
     }
   }, [isAuthenticated, navigate]);
 
-      const handleLogin = async (data: { email: string; password: string }) => {
-      setLoading(true);
-      setError(undefined);
-      try {
-        await dispatch(loginUser(data) as any);
-        navigate('/dashboard');
-      } catch (err: any) {
-        setError(err?.message || 'Login failed');
-      } finally {
-        setLoading(false);
-      }
-    };
+  const handleLogin = async (data: { email: string; password: string }) => {
+    setLoading(true);
+    setError(undefined);
+    try {
+      await dispatch(loginUser(data) as any);
+      navigate('/dashboard');
+    } catch (err: any) {
+      setError(err?.message || 'Login failed');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Don't render if already authenticated
   if (isAuthenticated) {

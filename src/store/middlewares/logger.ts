@@ -1,6 +1,6 @@
 import type { Middleware } from 'redux';
 
-export const loggerMiddleware: Middleware = store => next => action => {
+export const loggerMiddleware: Middleware = _store => next => action => {
   if (import.meta.env.DEV) {
     console.group((action as any).type);
     console.info('dispatching', action);

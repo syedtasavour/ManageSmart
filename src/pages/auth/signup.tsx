@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useAppSelector } from '../../hooks/useRedux';
 import { selectIsAuthenticated } from '../../store/selectors/authSelectors';
 import { SignupForm } from '../../components/auth/SignupForm';
