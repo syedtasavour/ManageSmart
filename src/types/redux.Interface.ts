@@ -48,6 +48,5 @@ export interface LogoutAction {
 }
 
 // Root State and Dispatch types
-// These types are defined here and imported by store/index.ts
-export type RootState = any; // Will be properly typed when store is configured
-export type AppDispatch = any; // Will be properly typed when store is configured
+// Import from store/index.ts to get proper typing
+export type { RootState, AppDispatch } from '../store/index';

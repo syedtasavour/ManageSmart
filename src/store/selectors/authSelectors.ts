@@ -1,4 +1,4 @@
-import type { RootState } from '../../store/index';
+import type { RootState } from '../../types/redux.Interface';
 
 // Basic selectors
 export const selectAuth = (state: RootState) => state.auth;
