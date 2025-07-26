@@ -1,4 +1,4 @@
-import type { AppDispatch } from '../index';
+import type { AppDispatch } from '../../types/redux.Interface';
 import { loginRequest, loginSuccess, loginFailure, logout } from '../slices/authSlice';
 import { apiClient } from '../../utils/apiClient';
 import { toast } from '../../utils/toast';
