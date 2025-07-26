@@ -1,5 +1,5 @@
-import type { InputProps as SemanticInputProps } from 'semantic-ui-react';
-export interface MSInputProps extends Omit<SemanticInputProps, 'label'> {
+import type { InputProps } from 'semantic-ui-react';
+export interface MSInputProps extends Omit<InputProps, 'label'> {
     label?: string;
     id?: string;
     name?: string;

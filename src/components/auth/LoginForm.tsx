@@ -2,12 +2,7 @@ import React, { useState } from 'react';
 import { SemanticForm } from '../forms/SemanticForm';
 import { SemanticInput } from '../ui/input/SemanticInput';
 import { SemanticButton } from '../ui/buttons/SemanticButton';
-
-interface LoginFormProps {
-  onSubmit: (data: { email: string; password: string }) => void | Promise<void>;
-  loading?: boolean;
-  error?: string;
-}
+import type { LoginFormProps } from '../../types/auth.interface';
 
 export const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, loading, error }) => {
   const [email, setEmail] = useState('');
