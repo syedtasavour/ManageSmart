@@ -16,8 +16,6 @@ export function useApi<T = any>() {
       setLoading(true);
       
       const response = await apiClient<T>(endpoint, options);
-      console.log('API Response:', response);
-      console.log('Response data:', response.data);
       return response.data;
     } catch (err) {
       if (err instanceof ApiError) {

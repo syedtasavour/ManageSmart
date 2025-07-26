@@ -1,0 +1,12 @@
+import type { Middleware } from 'redux';
+
+export const loggerMiddleware: Middleware = _store => next => action => {
+  if (import.meta.env.VITE_API_DEV === true) {
+    console.group((action as any).type);
+    console.info('dispatching', action);
+    const result = next(action);
+    console.groupEnd();
+    return result;
+  }
+  return next(action);
+};

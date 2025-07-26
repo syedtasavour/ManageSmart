@@ -1,13 +1,11 @@
 import { useState, useEffect } from 'react';
-import { useAppDispatch, useAppSelector } from '../../hooks/useRedux';
-import { loginUser } from '../../store/actions/authActions';
+import { useAppSelector } from '../../hooks/useRedux';
 import { selectIsAuthenticated } from '../../store/selectors/authSelectors';
-import { LoginForm } from '../../components/auth/LoginForm';
+import { SignupForm } from '../../components/auth/SignupForm';
 import { Container, Header, Segment } from 'semantic-ui-react';
 import { useNavigate } from 'react-router-dom';
 
-export default function LoginPage() {
-  const dispatch = useAppDispatch();
+export default function SignupPage() {
   const navigate = useNavigate();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const [loading, setLoading] = useState(false);
@@ -20,14 +18,22 @@ export default function LoginPage() {
     }
   }, [isAuthenticated, navigate]);
 
-  const handleLogin = async (data: { email: string; password: string }) => {
+  const handleSignup = async (data: { name: string; email: string; password: string }) => {
     setLoading(true);
     setError(undefined);
     try {
-      await dispatch(loginUser(data) as any);
-      navigate('/dashboard');
+      const response = await fetch('/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Signup failed');
+      }
+      navigate('/auth/login');
     } catch (err: any) {
-      setError(err?.message || 'Login failed');
+      setError(err?.message || 'Signup failed');
     } finally {
       setLoading(false);
     }
@@ -41,8 +47,8 @@ export default function LoginPage() {
   return (
     <Container text style={{ marginTop: 60 }}>
       <Segment padded="very">
-        <Header as="h2" textAlign="center">Login</Header>
-        <LoginForm onSubmit={handleLogin} loading={loading} error={error} />
+        <Header as="h2" textAlign="center">Sign Up</Header>
+        <SignupForm onSubmit={handleSignup} loading={loading} error={error} />
       </Segment>
     </Container>
   );
