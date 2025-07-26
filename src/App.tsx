@@ -1,5 +1,4 @@
 import { MsButton, MsLinkButton, MsConfirmButton } from './components/ui/buttons/index';
-import { MSInput } from './components/ui/input/MSInput';
 import './styles/App.css';
 import { LoginForm } from './pages/auth/login';
 import { useApiQuery } from './hooks/useApiQuery';
