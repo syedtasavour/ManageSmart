@@ -36,6 +36,49 @@ const clearStoredToken = (): void => {
   document.cookie = 'accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 };
 
+export const signupUser = (userData: { name: string; email: string; password: string }) => {
+  return async (dispatch: AppDispatch) => {
+    try {
+      dispatch(loginRequest()); // Reuse login request for loading state
+      
+      const response = await apiClient('/auth/register', {
+        method: 'POST',
+        body: userData,
+      });
+
+      const data = response.data;
+
+      // Handle different response formats
+      let token = data.token;
+      let user = data.user || data; // If no separate user object, use the whole response
+      if (token) {
+        storeToken(token);
+      } else {
+        // If no token in response, try to get it from cookies/localStorage
+        token = getStoredToken();
+        if (!token) {
+          console.error('No token found anywhere!');
+          throw new Error('No token received from signup');
+        }
+      }
+
+      dispatch(loginSuccess(token, user));
+      toast.success('Signup successful!');
+      return data;
+    } catch (error) {
+      let errorMessage = 'Signup failed';
+      if (error instanceof ApiError) {
+        errorMessage = error.data?.message || error.message;
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      dispatch(loginFailure(errorMessage));
+      toast.error(errorMessage);
+      throw error;
+    }
+  };
+};
+
 export const loginUser = (credentials: { email: string; password: string }) => {
   return async (dispatch: AppDispatch) => {
     try {
